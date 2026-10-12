@@ -1,0 +1,61 @@
+name: Fokly
+options:
+  bundleIdPrefix: app.fokly
+  deploymentTarget:
+    macOS: "26.0"
+  createIntermediateGroups: true
+
+packages:
+  mlx-swift-lm:
+    url: https://github.com/ml-explore/mlx-swift-lm
+    from: 3.32.3
+  swift-huggingface:
+    url: https://github.com/huggingface/swift-huggingface
+    from: 0.9.0
+  swift-transformers:
+    url: https://github.com/huggingface/swift-transformers
+    from: 1.3.0
+
+targets:
+  Fokly:
+    type: application
+    platform: macOS
+    sources:
+      - path: Fokly
+    info:
+      path: Fokly/Info.plist
+      properties:
+        CFBundleDisplayName: Fokly
+        CFBundleShortVersionString: "1.0"
+        CFBundleVersion: "1"
+        LSUIElement: true
+        LSApplicationCategoryType: public.app-category.productivity
+        NSHumanReadableCopyright: "On-device focus companion"
+        NSScreenCaptureUsageDescription: "Fokly looks at the window you're working in to notice when you drift from your goal. Everything is processed on this Mac and nothing is saved."
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.fokly.Fokly
+        PRODUCT_NAME: Fokly
+        SWIFT_VERSION: "5.0"
+        MACOSX_DEPLOYMENT_TARGET: "26.0"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        CODE_SIGN_STYLE: Manual
+        CODE_SIGN_IDENTITY: "Developer ID Application"
+        DEVELOPMENT_TEAM: P65VQHHXCB
+        ENABLE_HARDENED_RUNTIME: YES
+        OTHER_CODE_SIGN_FLAGS: "--timestamp"
+        CODE_SIGN_INJECT_BASE_ENTITLEMENTS: NO
+        ENABLE_APP_SANDBOX: NO
+        GENERATE_INFOPLIST_FILE: NO
+        COMBINE_HIDPI_IMAGES: YES
+    dependencies:
+      - package: mlx-swift-lm
+        product: MLXVLM
+      - package: mlx-swift-lm
+        product: MLXLMCommon
+      - package: mlx-swift-lm
+        product: MLXHuggingFace
+      - package: swift-huggingface
+        product: HuggingFace
+      - package: swift-transformers
+        product: Tokenizers
