@@ -1,3 +1,0 @@
-# The DMG lives on GitHub Releases under a stable name, so a new release needs no redeploy here.
-/download  https://github.com/jindratilk/fokly/releases/latest/download/Fokly.dmg  302
-/github    https://github.com/jindratilk/fokly  302

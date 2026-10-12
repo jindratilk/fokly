@@ -13,7 +13,7 @@
 <p align="center">
   <a href="https://github.com/jindratilk/fokly/releases/latest/download/Fokly.dmg"><b>Download for Mac</b></a>
   &nbsp;·&nbsp;
-  <a href="https://fokly.pages.dev">Website</a>
+  <a href="https://fokly.vercel.app">Website</a>
   &nbsp;·&nbsp;
   macOS 26 · Apple silicon · Free and open source
 </p>
@@ -113,7 +113,7 @@ Fokly/
   Panels/    Menu bar item and popover, the reminder panel, the floating timer, onboarding, permissions
   Views/     SwiftUI screens: start, active session, insights, settings
   App/       App entry point and the DEVTOOLS-only modes
-site/        The website (static, deployed to Cloudflare Pages)
+site/        The website (static, deployed to Vercel)
 scripts/     release.sh
 project.yml  XcodeGen project definition
 ```
