@@ -6,6 +6,7 @@
 #   xcrun notarytool store-credentials fokly-notary --apple-id <your Apple ID> --team-id P65VQHHXCB
 #
 # Usage: scripts/release.sh            (or NOTARY_PROFILE=other scripts/release.sh)
+# Then: gh release create vX.Y dist/Fokly-X.Y.dmg plus a copy named Fokly.dmg (the website links to that name).
 set -euo pipefail
 cd "$(dirname "$0")/.."
 export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
