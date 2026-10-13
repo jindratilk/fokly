@@ -34,6 +34,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         #if DEVTOOLS
         if DevTools.run(status: status) { return }
         #endif
+        Updater.shared.start()
         if !Prefs.d.bool(forKey: Prefs.onboarded) {
             let resume = Prefs.d.bool(forKey: Prefs.tourAtPermissions)
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { status.showWelcome(atPermissions: resume) }

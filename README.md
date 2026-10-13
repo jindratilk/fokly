@@ -46,6 +46,8 @@
   from Hugging Face, pinned to an exact commit.
 - **Nothing leaves your Mac.** No account, no cloud, no analytics. Screenshots and screen text are judged in memory and
   thrown away; only the session history (goal, times, app names) is kept, locally.
+- **The one request Fokly makes** is the daily update check: it reads [fokly.app/appcast.xml](https://fokly.app/appcast.xml)
+  through [Sparkle](https://sparkle-project.org), with no system profile. Turn it off in Settings → About.
 - **You can read every line.** That's the point of this repository.
 
 Fokly needs two permissions: **Screen Recording** to see the window you're working in, and **Accessibility** so
@@ -55,6 +57,10 @@ Fokly needs two permissions: **Screen Recording** to see the window you're worki
 
 Download [Fokly.dmg](https://github.com/jindratilk/fokly/releases/latest/download/Fokly.dmg), open it and drag Fokly to
 Applications. It's signed with a Developer ID and notarized by Apple.
+
+Fokly updates itself from 1.1 on. Updates are signed with an EdDSA key and verified before they're installed, and a
+check never interrupts a focus session: a small *Update* button appears in the popover instead. Coming from 1.0 or
+1.0.1? Download it once more; after that it keeps itself up to date.
 
 Requirements: macOS 27, an Apple silicon Mac, about 3 GB of disk for the model (the first session downloads it).
 
@@ -94,12 +100,19 @@ build-dev/Build/Products/Release/Fokly.app/Contents/MacOS/Fokly --bench-acc mlx-
 
 ### Releasing
 
-`scripts/release.sh` builds, verifies the signature and hardened runtime, packages a DMG, notarizes it and staples
-the ticket. One-time setup:
+`scripts/release.sh` builds, signs Sparkle's helpers and the app with Developer ID, verifies the hardened runtime,
+packages the DMG with its install window (`scripts/dmg/`), notarizes and staples it, then signs it for Sparkle and adds it
+to the update feed (`site/appcast.xml`). Set the version in `project.yml` and write `scripts/notes/<version>.html` first.
 
 ```sh
-xcrun notarytool store-credentials fokly-notary --apple-id <Apple ID> --team-id <Team ID>
+xcrun notarytool store-credentials fokly-notary --apple-id <Apple ID> --team-id <Team ID>   # once
+scripts/release.sh
+gh release create vX.Y dist/Fokly-X.Y.dmg dist/Fokly.dmg   # Fokly.dmg is what the website links to
+git commit site/appcast.xml -m "Fokly X.Y" && git push       # publish the feed only after the release exists
 ```
+
+The Sparkle signing key is in the login keychain (account `fokly`). Export a backup with
+`generate_keys --account fokly -x <file>`; without it no further update can be shipped to existing installs.
 
 ## Project layout
 
@@ -109,12 +122,13 @@ Fokly/
              ScreenObserver (active window via ScreenCaptureKit, Vision OCR, idle and lock detection)
              FocusJudge (MLX model loading, the prompt, parsing the verdict)
              WindowReturn (Take me back: back to the exact window and tab via Accessibility)
+             Updater (Sparkle: daily check, quiet during a session)
              HistoryStore, Models, Theme
   Panels/    Menu bar item and popover, the reminder panel, the floating timer, onboarding, permissions
   Views/     SwiftUI screens: start, active session, insights, settings
   App/       App entry point and the DEVTOOLS-only modes
-site/        The website (static, deployed to Vercel)
-scripts/     release.sh
+site/        The website (static, deployed to Vercel), the update feed, /admin download stats
+scripts/     release.sh, the DMG window (dmg/), the feed writer (appcast.py), release notes (notes/)
 project.yml  XcodeGen project definition
 ```
 
@@ -125,6 +139,6 @@ Issues and pull requests are welcome. If you change how Fokly judges the screen 
 
 ## License
 
-[MIT](LICENSE). The Qwen3.5 model weights are not part of this repository; they're downloaded from Hugging Face under
+[MIT](LICENSE). Updates use [Sparkle](https://github.com/sparkle-project/Sparkle) (MIT). The Qwen3.5 model weights are not part of this repository; they're downloaded from Hugging Face under
 their own license (Apache 2.0). Website photos are from Unsplash (Leo_Visions, KC Welch); the Fleet Week footage is by
 the U.S. Navy.

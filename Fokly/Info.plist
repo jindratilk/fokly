@@ -17,9 +17,9 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0</string>
+	<string>1.1</string>
 	<key>CFBundleVersion</key>
-	<string>1</string>
+	<string>3</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.productivity</string>
 	<key>LSUIElement</key>
@@ -27,6 +27,14 @@
 	<key>NSHumanReadableCopyright</key>
 	<string>On-device focus companion</string>
 	<key>NSScreenCaptureUsageDescription</key>
-	<string>Fokly looks at the window you're working in to notice when you drift from your goal. Everything is processed on this Mac and nothing is saved.</string>
+	<string>Fokly looks at the window you're working in to notice when you get distracted. Everything is processed on this Mac and nothing is saved.</string>
+	<key>SUEnableAutomaticChecks</key>
+	<true/>
+	<key>SUFeedURL</key>
+	<string>https://fokly.app/appcast.xml</string>
+	<key>SUPublicEDKey</key>
+	<string>BMZRMWodWEZt4iYZOWcmgP0jByv34ixkqtPsZPlj/Ws=</string>
+	<key>SUScheduledCheckInterval</key>
+	<integer>86400</integer>
 </dict>
 </plist>

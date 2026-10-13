@@ -81,6 +81,17 @@ struct StartView: View {
                     .foregroundStyle(.secondary)
             } else {
                 HStack(spacing: 12) {
+                    if let version = Updater.shared.available {
+                        Button { Updater.shared.checkForUpdates() } label: {
+                            Label("Update", systemImage: "arrow.down.circle.fill")
+                                .font(.system(size: 11, weight: .semibold))
+                                .padding(.horizontal, 8).padding(.vertical, 3)
+                                .background(Capsule().fill(Theme.focus.opacity(0.14)))
+                                .foregroundStyle(Theme.focus)
+                        }
+                        .help("Fokly \(version) is ready to install")
+                        .transition(.opacity.combined(with: .scale(scale: 0.9)))
+                    }
                     Button(action: openInsights) {
                         Image(systemName: "chart.bar.xaxis").font(.system(size: 13, weight: .medium))
                             .accessibilityLabel("Insights and history")

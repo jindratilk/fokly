@@ -181,6 +181,9 @@ final class StatusItemController: NSObject, NSPopoverDelegate {
         }
         menu.addItem(withTitle: "Insights & History…", action: #selector(insights), keyEquivalent: "y").target = self
         menu.addItem(withTitle: "Settings…", action: #selector(settings), keyEquivalent: ",").target = self
+        let update = Updater.shared.available.map { "Update to Fokly \($0)…" } ?? "Check for Updates…"
+        menu.addItem(withTitle: update, action: #selector(checkForUpdates), keyEquivalent: "").target = self
+        menu.addItem(.separator())
         menu.addItem(withTitle: "Quit Fokly", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
         item.menu = menu
         item.button?.performClick(nil)
@@ -192,6 +195,7 @@ final class StatusItemController: NSObject, NSPopoverDelegate {
     @objc private func toggleMini() { miniTimer.toggle() }
     @objc private func settings() { showSettings() }
     @objc private func insights() { showInsights() }
+    @objc private func checkForUpdates() { Updater.shared.checkForUpdates() }
 
     // Stress-test hooks.
     var insightsWindowForTest: NSWindow? { insightsWindow }

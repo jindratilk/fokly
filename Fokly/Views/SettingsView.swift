@@ -331,6 +331,8 @@ private struct ModelPane: View {
 }
 
 private struct AboutPane: View {
+    @Bindable private var updater = Updater.shared
+
     var body: some View {
         VStack(spacing: 14) {
             Image(nsImage: NSApp.applicationIconImage)
@@ -343,11 +345,22 @@ private struct AboutPane: View {
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.secondary)
                 .padding(.top, 4)
-            Button("Show Welcome Tour") { NotificationCenter.default.post(name: .showWelcomeTour, object: nil) }
-                .buttonStyle(.glass)
-                .buttonBorderShape(.capsule)
-                .controlSize(.large)
-                .padding(.top, 8)
+            HStack(spacing: 10) {
+                Button("Check for Updates…") { Updater.shared.checkForUpdates() }
+                Button("Show Welcome Tour") { NotificationCenter.default.post(name: .showWelcomeTour, object: nil) }
+            }
+            .buttonStyle(.glass)
+            .buttonBorderShape(.capsule)
+            .controlSize(.large)
+            .padding(.top, 8)
+            Toggle("Check for updates automatically", isOn: $updater.automaticallyChecks)
+                .toggleStyle(.checkbox)
+                .padding(.top, 6)
+            Text("Once a day Fokly asks fokly.app for a new version. No profile or usage data is sent.")
+                .font(.caption)
+                .multilineTextAlignment(.center)
+                .foregroundStyle(.tertiary)
+                .frame(maxWidth: 320)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(30)

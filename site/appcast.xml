@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
+  <channel>
+    <title>Fokly</title>
+    <link>https://fokly.app</link>
+    <description>Fokly updates</description>
+    <language>en</language>
+    <item>
+      <title>Fokly 1.1</title>
+      <pubDate>Tue, 13 Oct 2026 15:13:45 GMT</pubDate>
+      <sparkle:version>3</sparkle:version>
+      <sparkle:shortVersionString>1.1</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+      <description><![CDATA[
+<h2>Fokly 1.1</h2>
+<ul>
+  <li><b>Fokly now updates itself.</b> It checks once a day and never interrupts a focus session: a small Update button appears in the popover instead. You can turn the check off in Settings → About.</li>
+  <li>A new install window.</li>
+  <li>Settings → About shows the right version number.</li>
+</ul>
+      ]]></description>
+      <enclosure url="https://github.com/jindratilk/fokly/releases/download/v1.1/Fokly-1.1.dmg" length="12381840" type="application/octet-stream" sparkle:edSignature="4aOo1Mwoavd7ZhNVLXj9Z+KHFge4Fmq4rrZEFiiyJy2VIzv84zEUJKXOo9mf9nTJyRPHO5lACyumvz3AjJhTCA=="/>
+    </item>
+  </channel>
+</rss>

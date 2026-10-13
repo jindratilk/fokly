@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Fokly Stats</title>
+<link rel="icon" type="image/png" href="/favicon.png">
+<meta name="theme-color" content="#F45B44">
+<style>
+/* Downloads, read live from the public GitHub releases API. "Downloads" is the Fokly.dmg asset the
+   website links to; "Updates" are the versioned DMGs (Fokly-X.Y.dmg) that Sparkle fetches from 1.1 on. */
+:root {
+  --bg: #FCFAF9; --ink: #18120F; --soft: #6E625D; --faint: #A69891; --line: rgba(24, 18, 15, 0.08);
+  --card: #FFFFFF; --coral: #F45B44; --mint: #2DB892; --track: rgba(24, 18, 15, 0.06);
+  --display: ui-rounded, "SF Pro Rounded", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --body: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", system-ui, sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0F0B0A; --ink: #F6EFEC; --soft: #A69891; --faint: #6E625D; --line: rgba(246, 239, 236, 0.09);
+    --card: #1A1514; --coral: #FA6652; --track: rgba(246, 239, 236, 0.07); color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0F0B0A; --ink: #F6EFEC; --soft: #A69891; --faint: #6E625D; --line: rgba(246, 239, 236, 0.09);
+  --card: #1A1514; --coral: #FA6652; --track: rgba(246, 239, 236, 0.07); color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 15px; line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+}
+main { max-width: 760px; margin: 0 auto; padding: 40px 16px 64px; }
+a { color: inherit; }
+header { display: flex; align-items: center; gap: 10px; margin-bottom: 36px; }
+header img { width: 28px; height: 28px; border-radius: 7px; }
+header h1 { font-family: var(--display); font-size: 19px; font-weight: 650; letter-spacing: -0.02em; margin: 0; }
+header .when { margin-left: auto; color: var(--faint); font-size: 13px; font-variant-numeric: tabular-nums; }
+button {
+  font: inherit; font-size: 13px; color: var(--soft); background: none; border: 1px solid var(--line);
+  border-radius: 99px; padding: 4px 12px; cursor: pointer;
+}
+button:hover { color: var(--ink); }
+button:focus-visible { outline: 2px solid var(--coral); outline-offset: 2px; }
+
+.hero { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+.tile { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 18px 20px 20px; min-width: 0; }
+.tile .label { color: var(--soft); font-size: 13px; }
+.tile .value {
+  font-family: var(--display); font-weight: 700; letter-spacing: -0.04em; font-variant-numeric: tabular-nums;
+  font-size: 40px; line-height: 1.05; margin-top: 6px;
+}
+.tile.main .value { font-size: 64px; color: var(--coral); }
+.tile .sub { color: var(--faint); font-size: 13px; margin-top: 6px; min-height: 1.45em; }
+.tile .sub b { color: var(--mint); font-weight: 600; }
+
+h2 { font-family: var(--display); font-size: 15px; font-weight: 650; margin: 36px 0 12px; letter-spacing: -0.01em; }
+.releases { background: var(--card); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; }
+.row { display: grid; grid-template-columns: 74px 1fr 64px 64px; align-items: center; gap: 14px; padding: 14px 20px; }
+.row + .row { border-top: 1px solid var(--line); }
+.row.head { color: var(--faint); font-size: 12px; padding-block: 10px; }
+.row .v { font-family: var(--display); font-weight: 650; }
+.row .v small { display: block; font-family: var(--body); font-weight: 400; color: var(--faint); font-size: 12px; }
+.row .n { text-align: right; font-variant-numeric: tabular-nums; }
+.row .n.u { color: var(--soft); }
+.bar { height: 8px; border-radius: 99px; background: var(--track); overflow: hidden; display: flex; }
+.bar i { display: block; height: 100%; background: var(--coral); }
+.bar i + i { background: var(--mint); opacity: 0.8; }
+.tag { display: inline-block; font-size: 11px; font-weight: 600; color: var(--coral); margin-left: 6px; vertical-align: 1px; }
+
+.foot { color: var(--faint); font-size: 12.5px; margin-top: 20px; line-height: 1.6; }
+.foot span { display: inline-flex; align-items: center; gap: 6px; margin-right: 14px; }
+.foot span::before { content: ""; width: 8px; height: 8px; border-radius: 99px; background: var(--c); }
+.error { color: var(--coral); font-size: 13px; margin-top: 12px; }
+
+@media (max-width: 600px) {
+  .hero { grid-template-columns: 1fr 1fr; }
+  .tile.main { grid-column: 1 / -1; }
+  .row { grid-template-columns: 60px 1fr 48px 48px; gap: 10px; padding-inline: 14px; }
+  header .when { display: none; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .bar i { transition: width 0.6s cubic-bezier(.2, .9, .25, 1); }
+}
+</style>
+
+<main>
+  <header>
+    <img src="/apple-touch-icon.png" alt="">
+    <h1>Fokly Stats</h1>
+    <span class="when" id="when"></span>
+    <button id="refresh" type="button">Refresh</button>
+  </header>
+
+  <section class="hero">
+    <div class="tile main">
+      <div class="label">Downloads</div>
+      <div class="value" id="downloads">–</div>
+      <div class="sub" id="downloads-sub"></div>
+    </div>
+    <div class="tile">
+      <div class="label">Updates</div>
+      <div class="value" id="updates">–</div>
+      <div class="sub" id="updates-sub"></div>
+    </div>
+    <div class="tile">
+      <div class="label">GitHub stars</div>
+      <div class="value" id="stars">–</div>
+      <div class="sub" id="stars-sub"></div>
+    </div>
+  </section>
+
+  <h2>By release</h2>
+  <div class="releases" id="releases">
+    <div class="row head"><span>Version</span><span></span><span class="n">Downloads</span><span class="n">Updates</span></div>
+  </div>
+  <div class="error" id="error" hidden></div>
+
+  <p class="foot">
+    <span style="--c: var(--coral)">Downloads: Fokly.dmg, the file fokly.app links to</span>
+    <span style="--c: var(--mint)">Updates: the versioned DMG that Fokly's updater fetches (from 1.1)</span><br>
+    Live from the public GitHub API. GitHub counts every completed download, including repeat downloads and bots.
+    “Since your last visit” is remembered in this browser only.
+  </p>
+</main>
+
+<script>
+const REPO = "jindratilk/fokly";
+const $ = (id) => document.getElementById(id);
+const fmt = (n) => n.toLocaleString("en-US");
+let current = null;  // the latest live total, saved as "seen" when the page goes away
+addEventListener("pagehide", () => { if (current != null) store.set("fokly-stats-seen", { downloads: current, at: Date.now() }); });
+const store = {
+  get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
+};
+
+function render(data, fresh) {
+  const releases = data.releases.filter((r) => !r.draft).map((r) => {
+    let downloads = 0, updates = 0;
+    for (const a of r.assets) {
+      if (!a.name.endsWith(".dmg")) continue;
+      if (a.name === "Fokly.dmg") downloads += a.download_count; else updates += a.download_count;
+    }
+    return { tag: r.tag_name.replace(/^v/, ""), date: new Date(r.published_at), latest: r.id === data.latestId, downloads, updates };
+  });
+  const downloads = releases.reduce((s, r) => s + r.downloads, 0);
+  const updates = releases.reduce((s, r) => s + r.updates, 0);
+  const first = releases.length ? releases[releases.length - 1].date : new Date();
+  const days = Math.max(1, (Date.now() - first) / 864e5);
+
+  $("downloads").textContent = fmt(downloads);
+  $("updates").textContent = fmt(updates);
+  $("stars").textContent = fmt(data.repo.stargazers_count);
+  $("stars-sub").textContent = `${fmt(data.repo.forks_count)} forks`;
+  $("updates-sub").textContent = updates ? "" : "Counted from 1.1 on";
+
+  // "+N since your last visit", against the numbers from the previous visit (not the previous refresh).
+  const seen = store.get("fokly-stats-seen");
+  const since = seen ? downloads - seen.downloads : 0;
+  $("downloads-sub").innerHTML = (since > 0 ? `<b>+${fmt(since)}</b> since your last visit · ` : "")
+    + (days < 2 ? "Since launch on " : `${(downloads / days).toFixed(1)} a day since `)
+    + first.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  if (fresh) current = downloads;
+
+  const max = Math.max(1, ...releases.map((r) => r.downloads + r.updates));
+  const box = $("releases");
+  box.querySelectorAll(".row:not(.head)").forEach((n) => n.remove());
+  for (const r of releases) {
+    const row = document.createElement("div");
+    row.className = "row";
+    row.innerHTML = `
+      <span class="v">${r.tag}${r.latest ? '<span class="tag">Latest</span>' : ""}
+        <small>${r.date.toLocaleDateString("en-US", { month: "short", day: "numeric" })}</small></span>
+      <span class="bar" role="img" aria-label="${r.downloads} downloads, ${r.updates} updates">
+        <i style="width:${(r.downloads / max) * 100}%"></i><i style="width:${(r.updates / max) * 100}%"></i></span>
+      <span class="n">${fmt(r.downloads)}</span>
+      <span class="n u">${fmt(r.updates)}</span>`;
+    box.appendChild(row);
+  }
+  $("when").textContent = "Updated " + new Date(data.at).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+}
+
+async function load() {
+  $("refresh").disabled = true;
+  try {
+    const get = (p) => fetch(`https://api.github.com/repos/${REPO}${p}`, { headers: { Accept: "application/vnd.github+json" } })
+      .then((r) => { if (!r.ok) throw new Error(r.status === 403 ? "GitHub rate limit reached, try again in a few minutes." : `GitHub said ${r.status}.`); return r.json(); });
+    const [repo, releases, latest] = await Promise.all([get(""), get("/releases?per_page=100"), get("/releases/latest").catch(() => ({}))]);
+    const data = { repo, releases, latestId: latest.id, at: Date.now() };
+    store.set("fokly-stats-cache", data);
+    render(data, true);
+    $("error").hidden = true;
+  } catch (e) {
+    $("error").textContent = e.message;
+    $("error").hidden = false;
+  } finally {
+    $("refresh").disabled = false;
+  }
+}
+
+const cached = store.get("fokly-stats-cache");
+if (cached) render(cached, false);
+load();
+$("refresh").addEventListener("click", load);
+// Unauthenticated GitHub API allows 60 calls an hour; three per refresh every five minutes stays well under.
+setInterval(() => { if (!document.hidden) load(); }, 5 * 60 * 1000);
+</script>
+</html>
