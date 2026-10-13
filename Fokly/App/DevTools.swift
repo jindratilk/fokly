@@ -56,7 +56,10 @@ enum DevTools {
 
     /// Modes that drive the normal UI. Returns true when one took over.
     static func run(status: StatusItemController) -> Bool {
-        if let i = CommandLine.arguments.firstIndex(of: "--film-plate"), i + 4 < CommandLine.arguments.count {
+        if let i = CommandLine.arguments.firstIndex(of: "--film-frames"), i + 4 < CommandLine.arguments.count {
+            let a = CommandLine.arguments
+            PlateFrames.run(kind: a[i + 1], clipFrames: a[i + 2], outDir: a[i + 3], seconds: Double(a[i + 4]) ?? 10)
+        } else         if let i = CommandLine.arguments.firstIndex(of: "--film-plate"), i + 4 < CommandLine.arguments.count {
             let a = CommandLine.arguments
             Film.runPlate(kind: a[i + 1], clip: a[i + 2], out: a[i + 3], seconds: Double(a[i + 4]) ?? 10)
         } else         if let i = CommandLine.arguments.firstIndex(of: "--film"), i + 1 < CommandLine.arguments.count {

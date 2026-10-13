@@ -1,6 +1,8 @@
 #if DEVTOOLS
 import AppKit
+import ScreenCaptureKit
 import SwiftUI
+import UniformTypeIdentifiers
 
 /// Windows for the launch video, rebuilt from screenshots of the real apps (ChatGPT Codex, X in Zen).
 /// Each runs its own little script on `PlateClock`, so one recording covers the whole scene.
@@ -8,6 +10,9 @@ import SwiftUI
 final class PlateClock {
     var t: Double = 0
     private var start: Date?
+
+    /// Frame-by-frame rendering sets the time directly.
+    func set(_ time: Double) { t = time }
 
     func run() {
         start = Date()
@@ -19,6 +24,8 @@ final class PlateClock {
 
 private func ease(_ x: Double) -> Double { x < 0.5 ? 4 * x * x * x : 1 - pow(-2 * x + 2, 3) / 2 }
 private func progress(_ t: Double, _ a: Double, _ b: Double) -> Double { min(1, max(0, (t - a) / (b - a))) }
+/// A gentler curve for scrolling: eases in and out without the cubic's sudden middle.
+private func smooth(_ x: Double) -> Double { 0.5 - cos(x * .pi) / 2 }
 
 // MARK: - ChatGPT Codex
 
@@ -175,7 +182,8 @@ struct CodexWindow: View {
             VStack(alignment: .leading, spacing: 9) {
                 if t < 13 {
                     HStack(spacing: 7) {
-                        ProgressView().controlSize(.mini)
+                        Circle().trim(from: 0, to: 0.7).stroke(soft, style: StrokeStyle(lineWidth: 1.6, lineCap: .round))
+                            .frame(width: 11, height: 11).rotationEffect(.degrees(t * 360))
                         Text("Working · \(Int(t - 2) + 1)s").font(.system(size: 13, weight: .medium))
                             .foregroundStyle(soft)
                     }
@@ -268,13 +276,15 @@ struct XFeedWindow: View {
 
     /// Plate timeline: browse the search, click the first post (1.7 s), scroll down its replies
     /// into "Discover more", where the Blue Angels video lands and plays (~3.1 s).
-    static let clickAt = 1.7
+    static let clickAt = 1.75
+    /// When the video in "Discover more" starts playing, as it scrolls into view.
+    static let videoStart = 3.9
 
     var body: some View {
         let t = clock.t
         let onPost = t >= Self.clickAt
-        let searchScroll = 70 * ease(progress(t, 0.5, 1.5))
-        let threadScroll = 790 * ease(progress(t, 1.95, 3.1))
+        let searchScroll = 70 * smooth(progress(t, 0.4, 1.6))
+        let threadScroll = 790 * smooth(progress(t, 2.05, 4.25))
         HStack(alignment: .top, spacing: 0) {
             nav(onHome: false)
             VStack(spacing: 0) {
@@ -365,7 +375,9 @@ struct XFeedWindow: View {
         post(name: "SF Aviation", handle: "sfaviation", time: "4h", text: "Blue Angels over the Golden Gate this morning 🔥 #FleetWeek", color: Color(red: 0.1, green: 0.22, blue: 0.5),
              stats: ("812", "4.6K", "38K", "2.1M")) {
             ZStack(alignment: .bottomLeading) {
-                if let player = Film.clip { ClipView(player: player) } else { Color(white: 0.1) }
+                if let frame = PlateFrames.clipFrame(at: clock.t - Self.videoStart) {
+                    Image(nsImage: frame).resizable().aspectRatio(contentMode: .fill)
+                } else if let player = Film.clip { ClipView(player: player) } else { Color(white: 0.1) }
                 Text("0:24").font(.system(size: 11, weight: .semibold)).foregroundStyle(.white)
                     .padding(.horizontal, 5).padding(.vertical, 2)
                     .background(RoundedRectangle(cornerRadius: 4).fill(.black.opacity(0.65))).padding(10)
@@ -564,6 +576,63 @@ struct XFeedWindow: View {
             }
             Spacer()
             Image(systemName: "ellipsis").font(.system(size: 11)).foregroundStyle(soft)
+        }
+    }
+}
+
+/// `Fokly --film-frames codex|x <clip frames dir> <out dir> <seconds>`: renders a plate frame by
+/// frame at exactly 60 fps (a live recording drops and bunches frames, which shows as judder).
+@MainActor
+enum PlateFrames {
+    static var clipDir: String?
+
+    static func clipFrame(at t: Double) -> NSImage? {
+        guard let clipDir, t >= 0 else { return nil }
+        let i = min(Int(t * 60) + 1, 449)
+        return NSImage(contentsOfFile: String(format: "%@/%05d.jpg", clipDir, i))
+    }
+
+    static func run(kind: String, clipFrames: String, outDir: String, seconds: Double) {
+        clipDir = clipFrames
+        try? FileManager.default.createDirectory(atPath: outDir, withIntermediateDirectories: true)
+        let clock = PlateClock()
+        let size = NSSize(width: 1100, height: 660)
+        let root: AnyView = kind == "codex"
+            ? AnyView(CodexWindow(clock: clock).frame(width: size.width, height: size.height))
+            : AnyView(XFeedWindow(clock: clock).frame(width: size.width, height: size.height))
+        let w = NSWindow(contentRect: NSRect(origin: .zero, size: size), styleMask: [.borderless], backing: .buffered, defer: false)
+        w.contentView = NSHostingView(rootView: root.environment(\.colorScheme, .light).transaction { $0.disablesAnimations = true })
+        w.level = .screenSaver
+        w.hasShadow = false
+        w.backgroundColor = .white
+        let screen = NSScreen.screens[0].frame
+        w.setFrameOrigin(NSPoint(x: (screen.width - size.width) / 2, y: 80))
+        w.orderFrontRegardless()
+        Task {
+            try? await Task.sleep(for: .seconds(1.0))
+            guard let content = try? await SCShareableContent.excludingDesktopWindows(false, onScreenWindowsOnly: true),
+                  let target = content.windows.first(where: { $0.windowID == CGWindowID(w.windowNumber) }) else {
+                print("FRAMES_ERROR window not found"); exit(1)
+            }
+            let config = SCStreamConfiguration()
+            config.width = Int(size.width * 2)
+            config.height = Int(size.height * 2)
+            config.showsCursor = false
+            config.ignoreShadowsSingleWindow = true
+            let filter = SCContentFilter(desktopIndependentWindow: target)
+            let count = Int(seconds * 60)
+            for i in 0..<count {
+                clock.set(Double(i) / 60)
+                try? await Task.sleep(for: .milliseconds(24))
+                guard let image = try? await SCScreenshotManager.captureImage(contentFilter: filter, configuration: config) else { continue }
+                let url = URL(fileURLWithPath: String(format: "%@/%05d.jpg", outDir, i + 1))
+                if let dest = CGImageDestinationCreateWithURL(url as CFURL, UTType.jpeg.identifier as CFString, 1, nil) {
+                    CGImageDestinationAddImage(dest, image, [kCGImageDestinationLossyCompressionQuality: 0.94] as CFDictionary)
+                    CGImageDestinationFinalize(dest)
+                }
+            }
+            print("FRAMES_DONE \(count)")
+            exit(0)
         }
     }
 }

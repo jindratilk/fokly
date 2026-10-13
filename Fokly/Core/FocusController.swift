@@ -139,6 +139,13 @@ final class FocusController {
         return min(1, focusElapsed / TimeInterval(planned * 60))
     }
 
+    /// What the rings show: the time left while counting down (focus with a plan, or a break),
+    /// so they empty out like a timer; the hour so far when counting up without a plan.
+    var ring: Double {
+        if phase == .onBreak || plannedMinutes != nil { return max(0, 1 - progress) }
+        return progress
+    }
+
     var breakRemaining: TimeInterval { max(0, breakEndsAt?.timeIntervalSince(now) ?? 0) }
 
     var onGoalRatio: Double? {

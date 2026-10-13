@@ -21,7 +21,7 @@ struct ActiveView: View {
             }
 
             ZStack {
-                ProgressRing(progress: focus.progress, tint: tint, lineWidth: 11)
+                ProgressRing(progress: focus.ring, tint: tint, lineWidth: 11)
                 VStack(spacing: 2) {
                     Text(Clock.string(focus.clock))
                         .font(.clock(44))

@@ -113,11 +113,11 @@ final class StatusItemController: NSObject, NSPopoverDelegate {
             button.title = ""
         case .focusing:
             let tint = focus.attention == .drifting ? Theme.driftNS : Theme.focusNS
-            button.image = StatusArt.pill(text: Clock.string(focus.clock), progress: focus.progress, tint: tint, glyph: .ring)
+            button.image = StatusArt.pill(text: Clock.string(focus.clock), progress: focus.ring, tint: tint, glyph: .ring)
         case .paused:
-            button.image = StatusArt.pill(text: Clock.string(focus.clock), progress: focus.progress, tint: .secondaryLabelColor, glyph: .pause)
+            button.image = StatusArt.pill(text: Clock.string(focus.clock), progress: focus.ring, tint: .secondaryLabelColor, glyph: .pause)
         case .onBreak:
-            button.image = StatusArt.pill(text: Clock.string(focus.breakRemaining), progress: 1 - focus.progress, tint: Theme.restNS, glyph: .ring)
+            button.image = StatusArt.pill(text: Clock.string(focus.breakRemaining), progress: focus.ring, tint: Theme.restNS, glyph: .ring)
         }
         button.toolTip = focus.isActive ? focus.goal : "Fokly — start a focus session"
         switch phase {

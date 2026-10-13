@@ -63,7 +63,7 @@ struct MiniTimerView: View {
             Button(action: open) {
                 HStack(spacing: 12) {
                     ZStack {
-                        ProgressRing(progress: focus.phase == .onBreak ? 1 - focus.progress : focus.progress,
+                        ProgressRing(progress: focus.ring,
                                      tint: tint, lineWidth: 3.5)
                         Image(systemName: symbol)
                             .font(.system(size: 13, weight: .bold))

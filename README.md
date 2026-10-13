@@ -15,7 +15,7 @@
   &nbsp;·&nbsp;
   <a href="https://fokly.app">Website</a>
   &nbsp;·&nbsp;
-  macOS 26 or later · Apple silicon · Free and open source
+  macOS 27 · Apple silicon · Free and open source
 </p>
 
 <p align="center">
@@ -56,7 +56,7 @@ Fokly needs two permissions: **Screen Recording** to see the window you're worki
 Download [Fokly.dmg](https://github.com/jindratilk/fokly/releases/latest/download/Fokly.dmg), open it and drag Fokly to
 Applications. It's signed with a Developer ID and notarized by Apple.
 
-Requirements: macOS 26 or later, an Apple silicon Mac, about 3 GB of disk for the model (the first session downloads it).
+Requirements: macOS 27, an Apple silicon Mac, about 3 GB of disk for the model (the first session downloads it).
 
 ## Build from source
 

@@ -326,7 +326,7 @@ private struct PillArt: View {
     var body: some View {
         TimelineView(.periodic(from: .now, by: 1)) { ctx in
             let left = max(0, 24 * 60 + 13 - Int(ctx.date.timeIntervalSince(start)))
-            let progress = 1 - Double(left) / 3000
+            let progress = Double(left) / 3000  // time left, like the real ring
             HStack(spacing: 14) {
                 ZStack {
                     Circle().stroke(Theme.focus.opacity(0.25), lineWidth: 5)

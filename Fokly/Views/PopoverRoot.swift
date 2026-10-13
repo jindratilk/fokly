@@ -69,7 +69,7 @@ struct BreakView: View {
             }
 
             ZStack {
-                ProgressRing(progress: appeared ? 1 - focus.progress : 0, tint: Theme.rest, lineWidth: 11)
+                ProgressRing(progress: appeared ? focus.ring : 0, tint: Theme.rest, lineWidth: 11)
                 VStack(spacing: 2) {
                     Text(Clock.string(focus.breakRemaining))
                         .font(.clock(44))
