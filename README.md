@@ -13,7 +13,7 @@
 <p align="center">
   <a href="https://github.com/jindratilk/fokly/releases/latest/download/Fokly.dmg"><b>Download for Mac</b></a>
   &nbsp;·&nbsp;
-  <a href="https://fokly.vercel.app">Website</a>
+  <a href="https://fokly.app">Website</a>
   &nbsp;·&nbsp;
   macOS 26 · Apple silicon · Free and open source
 </p>
