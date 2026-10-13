@@ -127,7 +127,7 @@ Fokly/
   Panels/    Menu bar item and popover, the reminder panel, the floating timer, onboarding, permissions
   Views/     SwiftUI screens: start, active session, insights, settings
   App/       App entry point and the DEVTOOLS-only modes
-site/        The website (static, deployed to Vercel), the update feed, /admin download stats
+site/        The website (static, deployed to Vercel) and the update feed
 scripts/     release.sh, the DMG window (dmg/), the feed writer (appcast.py), release notes (notes/)
 project.yml  XcodeGen project definition
 ```
