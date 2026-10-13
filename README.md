@@ -15,7 +15,7 @@
   &nbsp;·&nbsp;
   <a href="https://fokly.app">Website</a>
   &nbsp;·&nbsp;
-  macOS 26 · Apple silicon · Free and open source
+  macOS 26 or later · Apple silicon · Free and open source
 </p>
 
 <p align="center">
@@ -26,9 +26,9 @@
 
 1. **Tell Fokly what you're working on.** Click the ring in the menu bar (or press <kbd>⌃</kbd><kbd>⌥</kbd><kbd>Space</kbd>),
    type your goal and pick a length. Optionally list what also counts (*Slack #team, the docs*) and what never does (*YouTube, X*).
-2. **Get to work.** Every 20 seconds Fokly glances at the window in front of you: it reads the app, the window title
+2. **Get to work.** Every 20 seconds Fokly checks the window in front of you: it reads the app, the window title
    and the text on screen, and a local AI model decides whether it serves your goal.
-3. **Fokly notices.** Wander off and the menu bar turns amber right away. If it lasts (two minutes by default), a quiet
+3. **Fokly reminds you.** Get distracted and the menu bar turns amber right away. If it lasts (two minutes by default), a quiet
    reminder slides in, written about what you're actually doing.
 4. **One click and you're back.** *Take me back* returns you to the exact window and browser tab you were working in.
    *This is relevant* teaches the session that the activity counts. *Take a break* pauses without guilt.
@@ -105,7 +105,7 @@ xcrun notarytool store-credentials fokly-notary --apple-id <Apple ID> --team-id 
 
 ```
 Fokly/
-  Core/      FocusController (session state, the observe → judge loop, drift and reminders)
+  Core/      FocusController (session state, the observe → judge loop, distractions and reminders)
              ScreenObserver (active window via ScreenCaptureKit, Vision OCR, idle and lock detection)
              FocusJudge (MLX model loading, the prompt, parsing the verdict)
              WindowReturn (Take me back: back to the exact window and tab via Accessibility)

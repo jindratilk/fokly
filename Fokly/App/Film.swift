@@ -102,10 +102,17 @@ extension Film {
         thumbs = names.filter { $0.hasPrefix("thumb") && $0.hasSuffix(".jpg") }.sorted()
             .compactMap { NSImage(contentsOf: dir.appendingPathComponent($0)) }
         let typing = PlateTyping()
-        let size = kind == "doc" ? NSSize(width: 700, height: 560) : NSSize(width: 1060, height: 640)
+        let clock = PlateClock()
+        let size = switch kind {
+        case "doc": NSSize(width: 700, height: 560)
+        case "codex", "x": NSSize(width: 1100, height: 660)
+        default: NSSize(width: 1060, height: 640)
+        }
         let root: AnyView = switch kind {
         case "doc": AnyView(PlateDoc(typing: typing).frame(width: size.width, height: size.height))
         case "ig": AnyView(InstagramWindow().frame(width: size.width, height: size.height))
+        case "codex": AnyView(CodexWindow(clock: clock).frame(width: size.width, height: size.height))
+        case "x": AnyView(XFeedWindow(clock: clock).frame(width: size.width, height: size.height))
         default: AnyView(YouTubeWindow(shadow: false).frame(width: size.width, height: size.height))
         }
         let w = NSWindow(contentRect: NSRect(origin: .zero, size: size), styleMask: [.borderless], backing: .buffered, defer: false)
@@ -121,7 +128,9 @@ extension Film {
             try? await Task.sleep(for: .seconds(1.5))
             await record(window: w, to: URL(fileURLWithPath: out), seconds: seconds) {
                 player.seek(to: .zero, toleranceBefore: .zero, toleranceAfter: .zero)
-                player.play()
+                // The X feed reaches the video three seconds in; start it there.
+                if kind == "x" { player.pause(); DispatchQueue.main.asyncAfter(deadline: .now() + 2.9) { player.play() } } else { player.play() }
+                clock.run()
                 Timer.scheduledTimer(withTimeInterval: 0.09, repeats: true) { _ in
                     MainActor.assumeIsolated { typing.typed = min(typing.typed + 1, 400) }
                 }
@@ -690,7 +699,7 @@ private struct SafariBar: View {
     }
 }
 
-private struct ClipView: NSViewRepresentable {
+struct ClipView: NSViewRepresentable {
     var player: AVPlayer
     func makeNSView(context: Context) -> NSView {
         let v = NSView()

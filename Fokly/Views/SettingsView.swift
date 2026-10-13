@@ -135,7 +135,7 @@ private struct AwarenessPane: View {
     var body: some View {
         Form {
             Section {
-                Picker("Glance at screen every", selection: $checkInterval) {
+                Picker("Check screen every", selection: $checkInterval) {
                     Text("10 seconds").tag(10.0)
                     Text("20 seconds").tag(20.0)
                     Text("30 seconds").tag(30.0)
@@ -158,7 +158,7 @@ private struct AwarenessPane: View {
                     Text("More accurate on visual screens. Text and window titles are always used.")
                 }
                 Toggle(isOn: $saveBattery) {
-                    Text("Glance less often in Low Power Mode")
+                    Text("Check less often in Low Power Mode")
                     Text("Halves how often Fokly checks your screen while Low Power Mode is on.")
                 }
             } footer: {

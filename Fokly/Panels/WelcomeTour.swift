@@ -194,10 +194,10 @@ private struct TourCard: View {
     private let slides = [
         Slide(id: 0, title: "Never be distracted again.",
               text: "Tell Fokly what you're working on. A quiet timer keeps you company in the menu bar."),
-        Slide(id: 1, title: "It glances, now and then.",
-              text: "Every few seconds Fokly looks at the window in front of you. Each sliver is one glance."),
+        Slide(id: 1, title: "It checks your screen.",
+              text: "Every few seconds Fokly looks at the window in front of you. Each bar is one check."),
         Slide(id: 2, title: "A reminder when you get distracted.",
-              text: "Wander off for a while and Fokly taps you on the shoulder, then takes you right back."),
+              text: "Stay distracted for a while and Fokly reminds you, then takes you right back."),
         Slide(id: 3, title: "Private by design.",
               text: "Fokly uses a local AI model running on your Mac that keeps you from distractions. No account, no cloud, nothing saved."),
         Slide(id: 4, title: "Fokly lives up here.",

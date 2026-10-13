@@ -195,7 +195,7 @@ struct OnboardingView: View {
                 FoklyMark(size: 34)
                 Text("Never be distracted again.")
                     .font(.system(size: 22, weight: .semibold, design: .rounded))
-                Text("Tell Fokly your goal. It glances at your screen now and then, and gently taps you on the shoulder when you wander off.")
+                Text("Tell Fokly your goal. It checks your screen now and then and reminds you when you get distracted.")
                     .font(.callout)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)

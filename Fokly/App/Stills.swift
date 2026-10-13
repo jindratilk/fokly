@@ -13,15 +13,15 @@ enum Stills {
     final class Model {
         var background = Color.white
         var item: Item = .none
-        var nudge = Nudge(appName: "Instagram", bundleID: "com.apple.Safari", activity: "Watching Instagram reels",
-                          reminder: "You've been watching Instagram reels for a few minutes. The EMEA section is waiting.",
+        var nudge = Nudge(appName: "X", bundleID: "app.zen-browser.zen", activity: "Watching Blue Angels videos on X",
+                          reminder: "You've been watching Blue Angels videos on X. Your onboarding is waiting.",
                           goal: Stills.goal)
     }
 
     enum Item { case none, start, active, nudge }
 
     static let canvas = NSSize(width: 600, height: 1000)
-    static let goal = "Write the Q3 sales report"
+    static let goal = "Build Fokly's onboarding"
 
     static func run(dir: String) async {
         try? FileManager.default.createDirectory(atPath: dir, withIntermediateDirectories: true)
@@ -71,7 +71,7 @@ enum Stills {
         f.start()
         for _ in 0..<120 where f.model.state != .ready { try? await Task.sleep(for: .seconds(0.5)) }
         f.debugFastForward(60 + 48)
-        f.debugSimulate(onGoal: true, app: "Pages", bundleID: "com.apple.iWork.Pages", activity: "Drafting the EMEA section")
+        f.debugSimulate(onGoal: true, app: "ChatGPT", bundleID: "com.openai.codex", activity: "Building the onboarding in Codex")
         model.item = .active
         try? await Task.sleep(for: .seconds(2.5))
 
@@ -91,7 +91,7 @@ enum Stills {
         for i in 0..<4 { focusTimes.append(await shootOnTick("active_\(i)")) }
 
         // Drifting.
-        f.debugSimulate(onGoal: false, app: "YouTube", bundleID: "com.apple.Safari", activity: "Watching the Blue Angels")
+        f.debugSimulate(onGoal: false, app: "X", bundleID: "app.zen-browser.zen", activity: "Watching Blue Angels videos on X")
         try? await Task.sleep(for: .seconds(0.5))
         _ = await shootOnTick("active_drift")
 
@@ -108,7 +108,7 @@ enum Stills {
             ("music", "Music", "com.apple.Music", "You've been building a playlist for a few minutes."),
         ]
         for (name, app, bundle, line) in others {
-            model.nudge = Nudge(appName: app, bundleID: bundle, activity: line, reminder: line + " The EMEA section is waiting.", goal: Stills.goal)
+            model.nudge = Nudge(appName: app, bundleID: bundle, activity: line, reminder: line + " Your onboarding is waiting.", goal: Stills.goal)
             try? await Task.sleep(for: .seconds(0.6))
             await shoot("nudge_\(name)")
         }
